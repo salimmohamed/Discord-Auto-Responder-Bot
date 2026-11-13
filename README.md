@@ -1,147 +1,174 @@
-# Discord Auto-Responder Bot
+<div align="center">
 
-## The Problem
+# Discord Auto-Responder
 
-I play WoW and wanted to get into boosting (helping other players for gold). The boosting communities post keys in Discord channels and it's first-come-first-serve. I was missing opportunities because I couldn't respond fast enough - by the time I saw the message, someone else already claimed it.
+**TL;DR: auto-reply in Discord the second someone posts a keyword or pings a role.**
 
-So I built this bot to automatically reply when certain keywords are posted. Works great for boosting, but you could use it for anything really.
+![Python](https://img.shields.io/badge/python-3.8+-3776AB?logo=python&logoColor=white)
+![discord.py-self](https://img.shields.io/badge/discord.py--self-5865F2?logo=discord&logoColor=white)
+![CustomTkinter](https://img.shields.io/badge/GUI-CustomTkinter-1f6aa5)
+![Self-bot](https://img.shields.io/badge/self--bot-use_at_your_own_risk-red)
 
-## What It Does
+<img src="assets/demo.gif" alt="Clicking through the Configuration, Keywords, Role Mentions, Channels, Bot Control and Config Management tabs" width="800">
 
-- Monitors Discord channels for keywords (like "key" or "boost")
-- Automatically responds with your message
-- Only works in channels you specify (so you don't spam everywhere)
-- Has a GUI to set up keywords and responses
-- Detects role mentions - responds when specific roles are mentioned
-- Channel filtering - restrict bot to only certain channels
+</div>
 
-## Quick Setup
+---
 
-1. Install Python packages:
-```bash
-pip install -r requirements.txt
-```
+I play WoW and wanted to get into boosting (helping other players for gold). The
+boosting communities post keys in Discord channels and it's first-come-first-serve.
+I kept missing them because by the time I saw the message, someone else had
+already claimed it:
 
-2. Get your Discord token (Google "how to get Discord token" - there are tutorials)
+| Approach | Problem |
+| --- | --- |
+| Watching the channel | You can't stare at Discord all day |
+| Discord notifications | You still have to see it, open it, and type a reply. Too slow |
+| A regular Discord bot | Bots can't reply as you, and the server would have to add it |
+
+So I built this. It watches the channels you pick, and the moment someone posts
+one of your keywords or pings one of your roles, it replies for you. Works great
+for boosting, but you could use it for anything really.
+
+> [!WARNING]
+> This is a **self-bot**: it runs on your personal Discord account, not a bot
+> account. That's against Discord's Terms of Service and can get your account
+> banned. Use it at your own risk.
+
+## What it does
+
+- **Keyword replies.** Someone says "key" or "boost", it replies with your message instantly.
+- **Role pings.** Replies when a specific role gets mentioned, like a "Boosters" role.
+- **Only the channels you pick.** So it's not replying all over every server you're in.
+- **Cooldown.** Waits a few minutes (5 by default) between replies so you don't spam.
+- **Popup when it replies.** A little notification tells you what it replied to and where, so you can DM the person.
+- **A GUI for everything.** No editing JSON by hand unless you want to.
+- **Multiple configs.** Keep separate setups (say, one per game) and switch between them.
+
+## Setup
+
+1. Install the packages:
+
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+2. Get your Discord token. Google "how to get Discord token", there are tutorials.
+   **Never share it with anyone.** It's basically your password.
 
 3. Run the GUI:
-```bash
-python gui.py
-```
 
-4. Set up your bot:
-   - Put your Discord token in the Configuration tab
-   - Add keywords like "key", "boost", "carry" in the Keywords tab
-   - Add your response like "I can do this! DM me"
-   - Add the channel IDs where boosting keys are posted
-   - Click Start Bot
+   ```sh
+   python gui.py
+   ```
 
-## How It Works
+4. Set it up:
+   - Put your token in the **Configuration** tab
+   - Add keywords like "key", "boost", "carry" in **Keywords**, with a reply like "I can do this! DM me"
+   - Add the channel IDs where keys get posted in **Channels**
+   - Hit **Start Bot** in **Bot Control**
 
-1. Bot watches the channels you specify
-2. When someone posts a message with your keywords
-3. Bot automatically replies with your message
-4. You get notified and can DM the person
+And you're good. Leave it running and it'll grab stuff for you.
+
+## The tabs
+
+| Tab | What it's for |
+| --- | --- |
+| **Configuration** | Your token, case-sensitive matching, reply vs. new message, and the cooldown slider |
+| **Keywords** | Keyword → reply pairs |
+| **Role Mentions** | Role ID → reply pairs |
+| **Channels** | Which channels it listens in. It shows channel names too, not just IDs |
+| **Bot Control** | Start and stop the bot and watch the live logs |
+| **Config Management** | Create, copy, and switch between configs |
+
+> [!NOTE]
+> After changing settings, restart the bot so it picks them up.
 
 ## Configuration
 
-The bot uses `config.json` for all settings. The GUI automatically creates and manages this file.
-
-### Configuration Structure
+The GUI saves everything to `config.json`, so you don't have to touch it. But if
+you want to, here's what it looks like:
 
 ```json
 {
-    "token": "YOUR_ACTUAL_TOKEN_HERE",
+    "token": "YOUR_USER_TOKEN_HERE",
     "keywords": {
         "key": "I can do this key! DM me",
         "boost": "I'm available for boosting! DM me",
         "carry": "I can carry this! DM me"
     },
+    "role_mentions": {
+        "123456789012345678": "On it, DM me!"
+    },
+    "allowed_channels": ["123456789012345678"],
     "case_sensitive": false,
     "respond_to_self": false,
     "reply_to_message": true,
-    "role_mentions": {
-        "123456789012345678": "This role was mentioned!"
-    },
-    "allowed_channels": ["123456789012345678"]
+    "message_delay_minutes": 5
 }
 ```
 
-### Configuration Options
-
-- token: Your Discord user token
-- keywords: Dictionary of keyword → response pairs
-- case_sensitive: Whether keyword matching is case-sensitive
-- respond_to_self: Whether to respond to your own messages
-- reply_to_message: Whether to reply to original message or send new one
-- role_mentions: Dictionary of role ID → response pairs
-- allowed_channels: List of channel IDs where bot should respond (empty = all channels)
-
-## How to Use
-
-### Keywords
-- Add keywords and responses in the Keywords tab
-- Bot will automatically detect these keywords in messages
-- Supports case-sensitive or case-insensitive matching
-
-### Role Mentions
-- Get role IDs by right-clicking roles → Copy ID (requires Developer Mode)
-- Add role IDs and responses in the Role Mentions tab
-- Bot responds when those roles are mentioned in messages
-
-### Channel Filtering
-- Get channel IDs by right-clicking channels → Copy ID (requires Developer Mode)
-- Add channel IDs in the Channels tab
-- Leave empty to listen in all channels
-- Bot only responds in specified channels
-
-### Bot Control
-- Use the Start/Stop buttons to control the bot
-- View live logs in the Bot Control tab
-- Bot automatically cleans up when stopped
+| Option | What it does |
+| --- | --- |
+| `token` | Your Discord user token |
+| `keywords` | Keyword → reply pairs |
+| `role_mentions` | Role ID → reply pairs |
+| `allowed_channels` | Channel IDs to listen in. Empty means **every** channel, so be careful |
+| `case_sensitive` | Whether "Key" and "key" count as different |
+| `respond_to_self` | Whether it replies to your own messages |
+| `reply_to_message` | `true` replies to the message, `false` sends a new one |
+| `message_delay_minutes` | Cooldown between replies. `0` turns it off |
 
 ## Getting IDs
 
-### Channel ID
-1. Right-click the channel name
-2. Select "Copy ID" (requires Developer Mode)
+Turn on Developer Mode first: **User Settings → Advanced → Developer Mode**.
 
-### Role ID
-1. Right-click the role name in the server member list
-2. Select "Copy ID" (requires Developer Mode)
+- **Channel ID:** right-click the channel → Copy ID
+- **Role ID:** right-click the role in the member list → Copy ID
 
-### Enable Developer Mode
-1. User Settings → Advanced
-2. Toggle "Developer Mode" on
+## How it works
 
+It's pretty simple:
 
-## Important Notes
-
-- Configuration changes: After modifying settings in the GUI, restart the bot to apply changes
-- Token security: Never share your Discord token
-- Channel restrictions: If no channels are specified, bot listens in ALL channels
-- Process locking: Only one bot instance can run at a time
-
-## ⚠️ Warning
-
-This is a self-bot (uses your personal account). Discord doesn't like self-bots and could ban your account. Use at your own risk!
+1. It logs in as you with [discord.py-self](https://github.com/dolfies/discord.py-self).
+2. Every message in your allowed channels gets checked for your keywords and role pings.
+3. If something matches and the cooldown is up, it replies right away.
+4. You get a popup saying where it replied, and you take it from there.
 
 ## Troubleshooting
 
-### Common Issues
+<details>
+<summary><b>"Another bot instance is already running"</b></summary>
 
-1. "Another bot instance is already running"
-   - Check if bot is running in another terminal
-   - Delete `bot.lock` file if it exists
+Only one bot can run at a time. Check if it's running in another terminal. If
+it isn't, delete the `bot.lock` file.
 
-2. "Invalid token"
-   - Verify your token is correct
-   - Get a fresh token using the browser method
+</details>
 
-3. Bot not responding
-   - Check if channel is in allowed_channels list
-   - Verify keywords are correctly configured
-   - Check bot logs in the GUI
+<details>
+<summary><b>"Invalid token"</b></summary>
 
-4. Python 3.13+ compatibility issues
-   - Install `legacy-cgi` and `audioop-lts` packages
+Double check your token, or grab a fresh one. Tokens can stop working when you
+log out or change your password.
+
+</details>
+
+<details>
+<summary><b>It's not replying</b></summary>
+
+- Is the channel in your allowed channels?
+- Are your keywords spelled right? Check the case-sensitive setting too.
+- Is the cooldown still running? The logs in **Bot Control** will say so.
+
+</details>
+
+<details>
+<summary><b>Errors on Python 3.13+</b></summary>
+
+Install the two modules newer Python removed:
+
+```sh
+pip install legacy-cgi audioop-lts
+```
+
+</details>
